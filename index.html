@@ -1,56 +1,44 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <title>Draft Overlay</title>
-  <style>
-    body {
-      margin: 0;
-      font-family: Arial, sans-serif;
-      background-color: transparent;
-      color: white;
-    }
-
-    #ticker {
-      width: 100%;
-      padding: 20px;
-      background: rgba(0, 0, 0, 0.7);
-      font-size: 24px;
-      text-align: center;
-    }
-
-    .section {
-      margin: 5px 0;
-    }
-  </style>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Draft Overlay (CSV version)</title>
+<style>
+  body {
+    margin: 0;
+    background: rgba(0,0,0,0.7);
+    font-family: Arial, sans-serif;
+    color: white;
+    text-align: center;
+    padding: 20px;
+  }
+  .section {
+    margin: 10px 0;
+    font-size: 24px;
+  }
+</style>
 </head>
 <body>
-  <div id="ticker">
-    <div class="section" id="team">🕒 ON THE CLOCK: Loading...</div>
-    <div class="section" id="best">🏀 BEST AVAILABLE: Loading...</div>
-    <div class="section" id="picks">📋 PICKS: Loading...</div>
-  </div>
+  <div class="section" id="team">🕒 ON THE CLOCK: Loading...</div>
+  <div class="section" id="best">🏀 BEST AVAILABLE: Loading...</div>
+  <div class="section" id="picks">📋 PICKS: Loading...</div>
 
   <script>
-    async function fetchDraftData() {
+    const sheetId = '1ZUVDPOJIfZHKLlxe_xMmX6FOLRpxa8mCl4OvFmKO5dI';
+    const gid = '0'; // Change if your data is on another tab
+
+    async function fetchDraftDataCSV() {
       try {
-        const res = await fetch('https://spreadsheets.google.com/feeds/cells/1VZgWDq6vGqXqQqZMYHfPby-rIKvT7WyLLDn3QgwJpco/1/public/full?alt=json');
-        const data = await res.json();
+        const url = `https://docs.google.com/spreadsheets/d/${1ZUVDPOJIfZHKLlxe_xMmX6FOLRpxa8mCl4OvFmKO5dI}/export?format=csv&gid=${gid}`;
+        const res = await fetch(url);
+        if (!res.ok) throw new Error('Network response was not ok');
+        const text = await res.text();
 
-        const cells = data.feed.entry.map(entry => entry.content.$t);
-        const team = cells[4]; // A2
-        const bestAvailable = cells[5]; // B2
-        const picks = cells[6]; // C2
+        // Parse CSV (very basic parser)
+        const rows = text.trim().split('\n').map(row => row.split(','));
 
-        document.getElementById('team').textContent = `🕒 ON THE CLOCK: ${team}`;
-        document.getElementById('best').textContent = `🏀 BEST AVAILABLE: ${bestAvailable}`;
-        document.getElementById('picks').textContent = `📋 PICKS: ${picks}`;
-      } catch (error) {
-        console.error("Failed to fetch data", error);
-      }
-    }
-
-    setInterval(fetchDraftData, 5000); // Refresh every 5 seconds
-    fetchDraftData(); // Initial call
-  </script>
-</body>
-</html>
+        // Assuming your data is on second row (index 1)
+        const team = rows[1][0] || 'N/A';
+        const bestAvailable = rows[1][1] || 'N/A';
+        const picks = rows[1][2] ||
