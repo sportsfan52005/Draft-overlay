@@ -33,7 +33,7 @@
   <script>
     async function fetchDraftData() {
       try {
-        const res = await fetch('https://spreadsheets.google.com/feeds/cells/YOUR_SHEET_ID/1/public/full?alt=json');
+        const res = await fetch('https://spreadsheets.google.com/feeds/cells/1ZUVDPOJIfZHKLlxe_xMmX6FOLRpxa8mCl4OvFmKO5dI/1/public/full?alt=json');
         const data = await res.json();
 
         const cells = data.feed.entry.map(entry => entry.content.$t);
